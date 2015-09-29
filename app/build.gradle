@@ -1,0 +1,65 @@
+apply plugin: 'android'
+
+repositories {
+    maven {
+        url 'https://raw.githubusercontent.com/felixb/mvn-repo/master/'
+    }
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        minSdkVersion 5
+        targetSdkVersion 23
+        versionCode 1512
+        versionName "1.8.4"
+    }
+
+    useLibrary 'org.apache.http.legacy'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    signingConfigs {
+        release {
+            if (project.hasProperty("releaseKeystorePassword")) {
+                storeFile file("release.ks")
+                storePassword releaseKeystorePassword
+                keyAlias "jarsign"
+                keyPassword releaseKeyPassword
+            }
+        }
+        debug {
+           storeFile file("/home/yug/.android/debug.keystore")
+           storePassword "android"
+           keyAlias "AndroidDebugKey"
+           keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix " debug"
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'de.ub0r.android.websms.connector.common:WebSMSAPI:1.0'
+}
